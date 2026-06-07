@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "gambiarra-args"
+name = "argument-parser"
 version = "0.1.0"
