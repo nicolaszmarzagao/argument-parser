@@ -2,28 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_FLAGS 50
-
-typedef enum {
-    NONE,
-    STR,
-    INT,
-    BOOL,
-} TYPE;
-
-typedef struct {
-    char* name;
-    char* value;
-    TYPE type;
-} Flag;    
-
-typedef struct {
-    const char* program_name;
-    const char* description;
-    char* version; // maybe this should be a string as well
-    Flag flags[MAX_FLAGS];
-    int current_flag;
-} ParserConfig;
+#include "parser.h"
 
 int parser_add_flag(ParserConfig* config, char* flag_name, TYPE flag_type) 
 {
@@ -57,6 +36,30 @@ ParserConfig parser_new(const char* program_name, char* version, const char* des
     return p;
 }
 
+char* parser_generate_help_message(ParserConfig* config)
+{}
+
+/* EXAMPLE
+$ curlpy --help
+usage: curlpy [-h] [-p PORT] [-i] [-X REQUEST] [-d DATA] url
+
+A implementation of curl with Python3
+
+positional arguments:
+  url                   URL curl will connect to.
+
+options:
+  -h, --help            show this help message and exit
+  -p, --port PORT       Port that curl will connect to.
+  -i, --include-headers
+                        Keeps HTTP header in output.
+  -X, --request REQUEST
+                        HTTP methods to use ie. GET, POST...
+  -d, --data DATA       Makes a POST request with a body
+*/
+
+
+
 void parser_parse_flag(ParserConfig* config, char* flag_name, int flag_index, char* value) 
 {
     if (strcmp(config->flags[flag_index].name, "--help") == 0) 
@@ -76,12 +79,13 @@ void parser_parse_flag(ParserConfig* config, char* flag_name, int flag_index, ch
     config->flags[flag_index].value = value;
 }
 
-int parser_parse(ParserConfig* config, int argc, char** argv) 
+
+void parser_parse(ParserConfig* config, int argc, char** argv) 
 {
     if (argc < 2)
     {
         printf("Print help message\n"); 
-        return 0;
+        return;
     }
     
     for (int i=0; i<argc; i++)
@@ -94,8 +98,6 @@ int parser_parse(ParserConfig* config, int argc, char** argv)
             }
         }
     }
-
-    return 0;
 }
 
 
@@ -103,16 +105,4 @@ void parser_print_flags(ParserConfig config)
 {
     for (int i=0; i<config.current_flag; i++)
         printf("%s: %s\n", config.flags[i].name, config.flags[i].value);
-}
-
-int main(int argc, char** argv) 
-{
-    ParserConfig parser = parser_new("hello", "0.0.1", "A simple hello commandline tool");
-    parser_add_flag(&parser, "--name", STR);
-    parser_add_flag(&parser, "--count", INT);
-    
-    int return_code = parser_parse(&parser, argc, argv);
-    parser_print_flags(parser);
-    
-    return return_code;
 }
