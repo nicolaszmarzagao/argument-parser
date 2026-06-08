@@ -4,7 +4,7 @@
 
 #include "parser.h"
 
-int parser_add_flag(ParserConfig* config, char* flag_name, TYPE flag_type) 
+int parser_add_flag(ParserConfig* config, char* flag_name, TYPE flag_type, bool required) 
 {
     if (config->current_flag < MAX_FLAGS)
     {
@@ -12,6 +12,8 @@ int parser_add_flag(ParserConfig* config, char* flag_name, TYPE flag_type)
         f.name = flag_name;
         f.value = NULL;
         f.type = flag_type;
+        f.required = required;
+        f.is_used = false;
 
         config->flags[config->current_flag] = f;
 
@@ -30,14 +32,17 @@ ParserConfig parser_new(const char* program_name, char* version, const char* des
     p.version      = version;
     p.current_flag = 0;
    
-    parser_add_flag(&p, "--help", BOOL);
-    parser_add_flag(&p, "--version", BOOL);
+    parser_add_flag(&p, "--help", BOOL, false);
+    parser_add_flag(&p, "--version", BOOL, false);
 
     return p;
 }
 
 char* parser_generate_help_message(ParserConfig* config)
-{}
+{
+    return
+        "Usage: %s ";
+}
 
 /* EXAMPLE
 $ curlpy --help
@@ -58,46 +63,49 @@ options:
   -d, --data DATA       Makes a POST request with a body
 */
 
-
-
-void parser_parse_flag(ParserConfig* config, char* flag_name, int flag_index, char* value) 
+bool is_flag(ParserConfig* config, int flag_index, char* arg)
 {
-    if (strcmp(config->flags[flag_index].name, "--help") == 0) 
-    {
-        config->flags[flag_index].value = "true";
-        printf("Help msg!\n");
-        return;
-    }
-        
-    else if (strcmp(config->flags[flag_index].name, "--version") == 0)
-    {
-        config->flags[flag_index].value = "true";
-        printf("Version %s\n", config->version);
-        return;
-    }
-
-    config->flags[flag_index].value = value;
+    return strcmp(config->flags[flag_index].name, arg) == 0;
 }
 
 
-void parser_parse(ParserConfig* config, int argc, char** argv) 
+void parser_set_flag_value(ParserConfig* config, int flag_index, char* value) 
+{
+    if (config->flags[flag_index].type == BOOL)
+        config->flags[flag_index].value = "true";
+    else
+        config->flags[flag_index].value = value; 
+
+    config->flags[flag_index].is_used = true;
+}
+
+int parser_validate_flags(ParserConfig* config)
+{
+    for (int i=0; i<config->current_flag; i++)
+        if (config->flags[i].required && !config->flags[i].is_used)
+        {
+            printf("Error: missing required flag '%s'\n", config->flags[i].name);
+            return 1;
+        }
+
+    return 0;
+}
+
+
+int parser_parse(ParserConfig* config, int argc, char** argv) 
 {
     if (argc < 2)
     {
         printf("Print help message\n"); 
-        return;
+        return 1;
     }
     
     for (int i=0; i<argc; i++)
-    {
-        for (int j=0; j<config->current_flag; j++) 
-        {
-            if (strcmp(config->flags[j].name, argv[i]) == 0) 
-            {
-                parser_parse_flag(config, config->flags[j].name, j, argv[i+1]);
-            }
-        }
-    }
+        for (int current_index=0; current_index<config->current_flag; current_index++) 
+            if (is_flag(config, current_index, argv[i]))
+                parser_set_flag_value(config, current_index, argv[i+1]);
+
+    return parser_validate_flags(config);
 }
 
 

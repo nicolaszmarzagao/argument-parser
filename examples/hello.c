@@ -3,11 +3,10 @@
 int main(int argc, char** argv) 
 {
     ParserConfig parser = parser_new("hello", "0.0.1", "A simple hello commandline tool");
-    parser_add_flag(&parser, "--name", STR);
-    parser_add_flag(&parser, "--count", INT);
+    parser_add_flag(&parser, "--name", STR, true);
+    parser_add_flag(&parser, "--count", INT, false);
 
-    parser_parse(&parser, argc, argv);
-    parser_print_flags(parser);
+    int err = parser_parse(&parser, argc, argv);
 
-    return 0;
+    return err;
 }

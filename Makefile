@@ -31,11 +31,12 @@ endif
 endif
 
 EXAMPLE_SRC = examples/$(EXAMPLE).c
-EXAMPLE_BIN = $(BUILD_DIR)/$(EXAMPLE)
+EXAMPLE_BIN = $(BUILD_DIR)/examples/$(EXAMPLE)
 
 example: $(EXAMPLE_BIN)
 
 $(EXAMPLE_BIN): $(EXAMPLE_SRC) $(LIB_FILE) | $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/examples
 	$(CC) $(CFLAGS) $(EXAMPLE_SRC) -L$(BUILD_DIR) -l$(LIB_NAME) -o $(EXAMPLE_BIN)
 
 run: $(EXAMPLE_BIN)
