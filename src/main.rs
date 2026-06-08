@@ -1,19 +1,29 @@
 use std::env;
 
 #[derive(Debug)]
-struct Config {
-    name: String,
-    count: i32
+struct ParserConfig {
+    program_name: str,
+    description: str,
+    options: Vec<str>,
 }
 
-impl Config {
+impl ParserConfig {
     fn new() -> Self {
-        Config { name: "null".to_string() , count: 1 }
+        config = Config { options: Vec::new() };
+        config.options.push("--help");
+        config.options.push("--version");
+
+        return config
     }
+
+    fn 
 }
 
 fn main() {
     let mut args = env::args();
+    let mut config = ParserConfig::new();
+
+
     if args.len() < 2 {
         // help message else is if the program name is not found (which should not happen)
         if let Some(program_name) = args.nth(0) {
