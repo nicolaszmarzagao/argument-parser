@@ -28,10 +28,19 @@ typedef struct {
     int current_flag;
 } ParserConfig;
 
-int parser_add_flag(ParserConfig* config, char* flag_name, TYPE flag_type, bool needed);
+// Inicialization functions
 ParserConfig parser_new(const char* program_name, char* version, const char* description);
-char* parser_generate_help_message(ParserConfig* config);
+int parser_add_flag(ParserConfig* config, char* flag_name, TYPE flag_type, bool needed);
 int parser_parse(ParserConfig* config, int argc, char** argv);
+
+// Getter functions
+char* parser_get_flag_value_string(ParserConfig* config, const char* flag_name);
+int parser_get_flag_value_int(ParserConfig* config, const char* flag_name);
+bool parser_get_flag_value_bool(ParserConfig* config, const char* flag_name);
+
+// Other
+bool parser_flag_was_used(ParserConfig* config, const char* flag_name);
+char* parser_generate_help_message(ParserConfig* config);
 void parser_print_flags(ParserConfig config);
 
 #endif

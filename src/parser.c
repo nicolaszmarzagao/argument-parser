@@ -114,3 +114,61 @@ void parser_print_flags(ParserConfig config)
     for (int i=0; i<config.current_flag; i++)
         printf("%s: %s\n", config.flags[i].name, config.flags[i].value);
 }
+
+// finds the flag and returns a pointer to it (helper function)
+Flag* get_flag(ParserConfig* config, const char* flag_name)
+{
+    for (int i=0; i<config->current_flag; i++)
+        if (strcmp(config->flags[i].name, flag_name) == 0)
+            return &config->flags[i];
+
+    return NULL;
+}
+
+
+bool parser_flag_was_used(ParserConfig* config, const char* flag_name)
+{
+    Flag* target_flag = get_flag(config, flag_name);
+    if (target_flag)
+        return target_flag->is_used;
+    else
+        return false;
+}
+
+char* parser_get_flag_value_string(ParserConfig* config, const char* flag_name)
+{
+    Flag* target_flag = get_flag(config, flag_name);
+    if (target_flag)
+        return target_flag->value;
+    else
+        return NULL;
+}
+
+int parser_get_flag_value_int(ParserConfig* config, const char* flag_name)
+{
+    Flag* target_flag = get_flag(config, flag_name);
+    if (target_flag)
+    {
+        if (target_flag->value == NULL) 
+            return 0;
+        else
+            return atoi(target_flag->value);
+    }
+    else
+        return 0;
+}
+
+bool parser_get_flag_value_bool(ParserConfig* config, const char* flag_name)
+{
+    Flag* target_flag = get_flag(config, flag_name);
+    if (target_flag)
+    {
+        if (target_flag->value == NULL) 
+            return false;
+        else
+            return strcmp(target_flag->value, "true") == 0;
+    }
+
+    else
+        return false;
+}
