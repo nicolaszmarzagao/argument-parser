@@ -42,7 +42,7 @@ The main goal is to create a small but usable parser that can:
   * [ ] invalid type
   * [ ] missing required flag
 
-* [ ] Retrieve values #1
+* [X] Retrieve values #1
 
 * [ ] Return error codes
 
