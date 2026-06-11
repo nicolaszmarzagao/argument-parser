@@ -18,9 +18,9 @@ int parser_add_flag(ParserConfig* config, char* flag_name, TYPE flag_type, bool 
         config->flags[config->current_flag] = f;
 
         config->current_flag++;
-        return 1;
+        return PARSER_OK;
     }
-    return 0; // too many flags
+    return PARSER_ERR_TOO_MANY_FLAGS;
 }
 
 

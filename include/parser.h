@@ -6,6 +6,17 @@
 #define MAX_FLAGS 50
 
 typedef enum {
+    PARSER_OK = 0,
+
+    PARSER_ERR_UNKNOWN_FLAG = 1,
+    PARSER_ERR_MISSING_VALUE = 2,
+    PARSER_ERR_INVALID_TYPE = 3,
+    PARSER_ERR_MISSING_REQUIRED = 4,
+    PARSER_ERR_DUPLICATE_FLAG = 5,
+    PARSER_ERR_TOO_MANY_FLAGS = 6,
+} ParserError;
+
+typedef enum {
     NONE,
     STR,
     INT,
